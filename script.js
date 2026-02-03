@@ -45,6 +45,31 @@ for(let i=0;i<particles.length;i++>){
   const t = (i/particles,length)*Math.PI*2;
   const h = heartShape(t);
   heartParticles.push({
-    
-  }
+     x: canvas.width/2 + h.x*12,
+    y: canvas.height/2 + h.y*12
+  });
 }
+
+let phase = 0;
+// Animáció
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = "#ff3366";
+
+  particles.forEach((p,i)=>{
+    if(phase < 200){
+      p.x += (p.tx - p.x)*0.05;
+      p.y += (p.ty - p.y)*0.05;
+    } else {
+      p.x += (heartParticles[i].x - p.x)*0.05;
+      p.y += (heartParticles[i].y - p.y)*0.05;
+    }
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,2,0,Math.PI*2);
+    ctx.fill();
+  });
+  phase++;
+  requestAnimationFrame(animate);
+}
+
+animate();
