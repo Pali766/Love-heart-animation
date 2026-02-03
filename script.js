@@ -44,5 +44,7 @@ function heartShape(t){
 for(let i=0;i<particles.length;i++>){
   const t = (i/particles,length)*Math.PI*2;
   const h = heartShape(t);
-  heartParticles
+  heartParticles.push({
+    
+  }
 }
