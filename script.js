@@ -39,11 +39,10 @@ function createTextParticles() {
 }
 
 // --- Szív definíció ---
-function heartShape(t, scale=12, pulse=0) {
-  // pulse: pulzáló effekt
-  const x = 16 * Math.pow(Math.sin(t), 3) * (1 + pulse);
-  const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t)) * (1 + pulse);
-  return { x: x*scale, y: y*scale };
+function heartShape(t) {
+  const x = 16 * Math.pow(Math.sin(t), 3);
+  const y = -(13*Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t));
+  return { x, y };
 }
 
 function createHeartParticles() {
