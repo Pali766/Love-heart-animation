@@ -1,109 +1,75 @@
 const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+const ctx = canvas.getContext("2d"); 
 
-let width = canvas.width = window.innerWidth;
-let height = canvas.height = window.innerHeight;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-let pulse = 0;
-
-// ---------- Részecskék ----------
-const textParticles = [];
+const text = "I LOVE YOU";
+const particles = [];
 const heartParticles = [];
 
-// ---------- 1. “I LOVE YOU” részecskék ----------
-const text = "I LOVE YOU";
+// Betűk részecskéi
+ctx.fillStyle = "white";
+ctx.font = "bold 100px Arial";
+ctx.textAlign = "center";
+ctx.textBaseline = "middle";
+ctx.fillText(text, canvas.width/2, canvas.height/2);
 
-function createTextParticles() {
-  textParticles.length = 0;
+const imageData = ctx.getImageData(0,0,canvas.width,canvas.height);
 
-  // Canvas-ra kirajzoljuk a szöveget
-  ctx.clearRect(0, 0, width, height);
-  ctx.font = "bold 100px Arial";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillStyle = "white";
-  ctx.fillText(text, width / 2, height / 2);
-
-  // Képadatok
-  const imageData = ctx.getImageData(0, 0, width, height);
-  for (let y = 0; y < height; y += 6) {
-    for (let x = 0; x < width; x += 6) {
-      const i = (y * width + x) * 4;
-      if (imageData.data[i + 3] > 128) {
-        textParticles.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
-          tx: x,
-          ty: y
-        });
-      }
+for(let y=0;y<canvas.height;y+=6){
+  for(let x=0;x<canvas.width;x+=6){
+    const i = (y*canvas.width + x)*4;
+    if(imageData.data[i+3] > 151){
+      particles.push({
+        x: Math.random()*canvas.width,
+        y: Math.random()*canvas.height,
+        tx: x,
+        ty: y
+      });
     }
   }
 }
 
-// ---------- 2. 3D szív részecskék ----------
-function heartShape3D(u, v){
-  const x = 16 * Math.pow(Math.sin(u),3);
-  const y = 13 * Math.cos(u) - 5*Math.cos(2*u) - 2*Math.cos(3*u) - Math.cos(4*u);
-  const z = 8 * Math.sin(v);
-  return {x, y, z};
+ctx.clearRect(0,0,canvas.width,canvas.height)>
+
+//szív alak definiálása
+function heartShape(t){
+  const x= 16 * Math.pow(Mathsin(t),3);
+  const y = -(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)=Math.cos(4*t));
+  return {x,y}
 }
 
-function createHeartParticles() {
-  heartParticles.length = 0;
-  for(let u = 0; u < Math.PI*2; u += 0.1){
-    for(let v = -Math.PI/2; v < Math.PI/2; v += 0.1){
-      heartParticles.push(heartShape3D(u,v));
-    }
-  }
+// Szív részecskék
+for(let i=0;i<particles.length;i++>){
+  const t = (i/particles,length)*Math.PI*2;
+  const h = heartShape(t);
+  heartParticles.push({
+     x: canvas.width/2 + h.x*12,
+    y: canvas.height/2 + h.y*12
+  });
 }
 
-// 3D → 2D vetítés
-function project3D(p){
-  const scale = 12 + 6*Math.sin(pulse); // pulzáló méret
-  const perspective = 200 / (200 + p.z);
-  return {
-    screenX: width/2 + p.x*scale*perspective,
-    screenY: height/2 - p.y*scale*perspective
-  };
-}
-
-// ---------- Animáció ----------
+let phase = 0;
+// Animáció
 function animate(){
-  ctx.clearRect(0,0,width,height);
-  pulse += 0.05;
-
-  // Text részecskék
-  ctx.fillStyle = "white";
-  textParticles.forEach(p=>{
-    p.x += (p.tx - p.x)*0.05;
-    p.y += (p.ty - p.y)*0.05;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, 2, 0, Math.PI*2);
-    ctx.fill();
-  });
-
-  // Szív részecskék
+  ctx.clearRect(0,0,canvas.width,canvas.height);
   ctx.fillStyle = "#ff3366";
-  heartParticles.forEach(p=>{
-    const {screenX, screenY} = project3D(p);
+
+  particles.forEach((p,i)=>{
+    if(phase < 200){
+      p.x += (p.tx - p.x)*0.05;
+      p.y += (p.ty - p.y)*0.05;
+    } else {
+      p.x += (heartParticles[i].x - p.x)*0.05;
+      p.y += (heartParticles[i].y - p.y)*0.05;
+    }
     ctx.beginPath();
-    ctx.arc(screenX, screenY, 2, 0, Math.PI*2);
+    ctx.arc(p.x,p.y,2,0,Math.PI*2);
     ctx.fill();
   });
-
+  phase++;
   requestAnimationFrame(animate);
 }
 
-// ---------- Ablak resize ----------
-window.addEventListener("resize", ()=>{
-  width = canvas.width = window.innerWidth;
-  height = canvas.height = window.innerHeight;
-  createTextParticles();
-  createHeartParticles();
-});
-
-// Inicializálás
-createTextParticles();
-createHeartParticles();
 animate();
