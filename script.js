@@ -1,3 +1,4 @@
+// --- Canvas beállítás ---
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
@@ -24,7 +25,7 @@ function createTextParticles() {
   for (let y = 0; y < height; y += 6) {
     for (let x = 0; x < width; x += 6) {
       const i = (y*width + x) * 4;
-      if (imageData.data[i+3] > 128) {
+      if (imageData.data[i+3] > 128) { // átlátszóság > 128
         particles.push({
           x: Math.random()*width,
           y: Math.random()*height,
@@ -39,10 +40,10 @@ function createTextParticles() {
 }
 
 // --- Szív definíció ---
-function heartShape(t) {
-  const x = 16 * Math.pow(Math.sin(t), 3);
-  const y = -(13*Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t));
-  return { x, y };
+function heartShape(t, scale=12, pulse=0) {
+  const x = 16 * Math.pow(Math.sin(t), 3) * (1 + pulse);
+  const y = -(13*Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t)) * (1 + pulse);
+  return { x: x*scale, y: y*scale };
 }
 
 function createHeartParticles() {
@@ -71,7 +72,6 @@ createTextParticles();
 createHeartParticles();
 
 let phase = 0;
-let pulseDirection = 1;
 
 // --- Animáció ---
 function animate() {
@@ -79,7 +79,7 @@ function animate() {
   ctx.fillStyle = "#ff3366";
 
   // pulzáló effekt
-  let pulse = Math.sin(phase/20) * 0.1; // 10% méretváltozás
+  let pulse = Math.sin(phase/20) * 0.1; // ±10% méretváltozás
   const len = particles.length;
 
   for (let i = 0; i < len; i++) {
